@@ -6,8 +6,15 @@
 <meta name="color-scheme" content="dark">
 <meta name="theme-color" content="#030303">
 <title>Insight AI — Sign up</title>
+<script>
+  // Set the first-frame state before the page is painted. Without JavaScript,
+  // or with reduced motion enabled, the original static page is shown.
+  if (!window.matchMedia('(prefers-reduced-motion: reduce)').matches) {
+    document.documentElement.classList.add('entrance');
+  }
+</script>
 <style>
-/* Inter (variable, wght + opsz axes) — embedded so the file works offline */
+/* Inter (variable, wght + opsz axes) — hosted locally so the file works offline */
 @font-face {
   font-family: "Inter Embedded";
   src: url(asset/inter-embedded.woff2) format("woff2");
@@ -208,6 +215,74 @@ h1.t span { display: block; }
   .app { position: relative; min-height: var(--vh); height: max(var(--vh), calc(var(--frame-top) + calc(616 * var(--u))), calc(470 * var(--u))); }
 }
 @media (prefers-reduced-motion: reduce) { * { transition: none !important; } }
+
+/* One opening sequence. The light and all background layers stay fixed. */
+@media (prefers-reduced-motion: no-preference) {
+  .entrance .rail .logo {
+    animation: entrance-rail .48s cubic-bezier(.22, 1, .36, 1) .06s both;
+  }
+  .entrance .rail .key-new,
+  .entrance .rail .key-user,
+  .entrance .rail .nav-ico {
+    animation: entrance-rail .54s cubic-bezier(.22, 1, .36, 1) .19s both;
+  }
+  .entrance h1.t span {
+    animation: entrance-title .84s cubic-bezier(.16, 1, .3, 1) both;
+  }
+  .entrance h1.t span:first-child { animation-delay: .31s; }
+  .entrance h1.t span:last-child { animation-delay: .45s; }
+  .entrance .sub {
+    animation: entrance-copy .58s cubic-bezier(.22, 1, .36, 1) .76s both;
+  }
+  .entrance .btn-apple {
+    animation: entrance-control .68s cubic-bezier(.22, 1, .36, 1) .94s both;
+  }
+  .entrance .btn-google {
+    animation: entrance-control .68s cubic-bezier(.22, 1, .36, 1) 1.07s both;
+  }
+  .entrance .divider {
+    animation: entrance-rule .48s cubic-bezier(.22, 1, .36, 1) 1.17s both;
+  }
+  .entrance .field {
+    animation: entrance-control .68s cubic-bezier(.22, 1, .36, 1) 1.30s both;
+  }
+  .entrance .btn-dim {
+    animation: entrance-control .68s cubic-bezier(.22, 1, .36, 1) 1.42s both;
+  }
+  .entrance .close {
+    animation: entrance-copy .48s cubic-bezier(.22, 1, .36, 1) 1.66s both;
+  }
+  @media (max-aspect-ratio: 1/1) {
+    .entrance .rail .nav-ico { animation: none; }
+    .entrance .rail .dock {
+      animation: entrance-dock .54s cubic-bezier(.22, 1, .36, 1) .19s both;
+    }
+  }
+}
+@keyframes entrance-rail {
+  from { opacity: 0; translate: -5px 0; }
+  to { opacity: 1; translate: none; }
+}
+@keyframes entrance-dock {
+  from { opacity: 0; translate: 0 7px; }
+  to { opacity: 1; translate: none; }
+}
+@keyframes entrance-title {
+  from { opacity: .55; clip-path: inset(0 0 100% 0); translate: 0 11px; }
+  to { opacity: 1; clip-path: inset(0 0 0 0); translate: none; }
+}
+@keyframes entrance-copy {
+  from { opacity: 0; translate: 0 6px; }
+  to { opacity: 1; translate: none; }
+}
+@keyframes entrance-control {
+  from { opacity: 0; translate: 0 9px; }
+  to { opacity: 1; translate: none; }
+}
+@keyframes entrance-rule {
+  from { clip-path: inset(0 100% 0 0); }
+  to { clip-path: inset(0 0 0 0); }
+}
 </style>
 </head>
 <body>
@@ -268,6 +343,20 @@ h1.t span { display: block; }
   </main>
 </div>
 <script>
+  // The last reveal completes the sequence; remove all animation rules so
+  // every foreground element returns to its original authored style.
+  (function () {
+    if (!document.documentElement.classList.contains('entrance')) return;
+    var last = document.querySelector('.close');
+    var timeout = setTimeout(finish, 2600);
+    last.addEventListener('animationend', finish, { once: true });
+    function finish() {
+      clearTimeout(timeout);
+      last.removeEventListener('animationend', finish);
+      document.documentElement.classList.remove('entrance');
+    }
+  })();
+
   // enable the email CTA once the address looks valid
   (function () {
     var input = document.querySelector('.field input'), cta = document.querySelector('.btn-dim');
